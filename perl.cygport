@@ -1,0 +1,35 @@
+NAME="perl"
+VERSION=5.14.4-RC2
+RELEASE=1
+CATEGORY="Interpreters Perl"
+SUMMARY="Perl programming language interpreter"
+DESCRIPTION="Perl is a general-purpose programming language originally
+developed for text manipulation and now used for a wide range of tasks
+including system administration, web development, network programming, GUI
+development, and more."
+HOMEPAGE="http://www.perl.org/"
+SRC_URI="mirror://cpan/src/5.0/perl-${VERSION}.tar.bz2"
+PATCH_URI="
+	pl-CYG07-cygwin_vendorarchautorebase-2.patch
+	pl-CYG08-b722195e_CYG17_utf8_paths.patch
+	pl-CYG10-95f6fab9_skip_testing_cygwin_utf8_readdir_with_Win32_ANSI_API.patch
+	pl-CYG11-fabf0235_Fix_test_50_on_cygwin_WINDOWS.patch
+	pl-CYG12-3691eaa7_Export_store_cop_label_for_the_perl_compiler.patch
+	pl-CYG13-31abdf84_APItest_coplabel_fix_warnings.patch
+	pl-Cygwin-sync_winenv.patch
+	pl-commit-0c612ce.patch
+	pl-commit-1bac5ec.patch
+	pl-cygwin_patchlevelh.patch
+	pl-hints-cygwin.patch
+"
+
+MAKEOPTS+=" -j1"
+
+src_compile() {
+	cd ${B}
+	${S}/Configure -d -e -Dprefix=/usr -Dmksymlinks -Dusethreads \
+		-Darchname=${ARCH}-cygwin-threads${ARCH_i686:+-64int} \
+		-Dlibperl=cygperl${PV[1]}_${PV[2]}.dll \
+		-Dcc=${CC} -Dld=${CXX} -Dldflags=-Wl,--exclude-libs,libssp.a
+	cygmake
+}
