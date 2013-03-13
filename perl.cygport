@@ -1,5 +1,5 @@
 NAME="perl"
-VERSION=5.14.4-RC2
+VERSION=5.14.4
 RELEASE=1
 CATEGORY="Interpreters Perl"
 SUMMARY="Perl programming language interpreter"
@@ -21,15 +21,41 @@ PATCH_URI="
 	pl-commit-1bac5ec.patch
 	pl-cygwin_patchlevelh.patch
 	pl-hints-cygwin.patch
+	pl-cygwin-check-libs.patch
 "
 
 MAKEOPTS+=" -j1"
 
 src_compile() {
 	cd ${B}
+	cat > Policy.sh <<_EOF
+#!/bin/sh
+prefix="/usr"
+siteprefix="/usr"
+vendorprefix="/usr"
+vendorman1dir="/usr/share/man/man1"
+vendorman3dir="/usr/share/man/man3"
+html1dir="/usr/share/doc/perl/html/html1"
+html3dir="/usr/share/doc/perl/html/html3"
+sitehtml1dir="/usr/share/doc/perl/html/html1"
+sitehtml3dir="/usr/share/doc/perl/html/html3"
+vendorhtml1dir="/usr/share/doc/perl/html/html1"
+vendorhtml3dir="/usr/share/doc/perl/html/html3"
+
+archname="${ARCH}-cygwin-threads${ARCH_i686+-64int}"
+privlib="/usr/lib/perl5/${VERSION%.*}"
+sitelib="/usr/lib/perl5/site_perl/${VERSION%.*}"
+vendorlib="/usr/lib/perl5/vendor_perl/${VERSION%.*}"
+archlib="/usr/lib/perl5/${VERSION%.*}/\${archname}"
+sitearch="/usr/lib/perl5/site_perl/${VERSION%.*}/\${archname}"
+vendorarch="/usr/lib/perl5/vendor_perl/${VERSION%.*}/\${archname}"
+
+sitebin="/usr/local/bin"
+sitescript="/usr/local/bin"
+_EOF
 	${S}/Configure -d -e -Dprefix=/usr -Dmksymlinks -Dusethreads \
 		-Darchname=${ARCH}-cygwin-threads${ARCH_i686:+-64int} \
 		-Dlibperl=cygperl${PV[1]}_${PV[2]}.dll \
-		-Dcc=${CC} -Dld=${CXX} -Dldflags=-Wl,--exclude-libs,libssp.a
+		-Dcc=${CC} -Dld=${CXX}
 	cygmake
 }

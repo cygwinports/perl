@@ -1,0 +1,14 @@
+--- perl-5.14.4-RC2-1/origsrc/perl-5.14.4-RC2/Configure	2012-12-19 06:25:23.000000000 -0600
++++ perl-5.14.4-RC2-1/src/perl-5.14.4-RC2/Configure	2013-03-10 22:54:46.714474300 -0500
+@@ -4973,6 +4973,11 @@ for thislib in $libswanted; do
+ 		$test -f "$xxx" && libstyle=shared
+ 	    fi
+ 	    if test ! -f "$xxx"; then
++		xxx=$thisdir/lib$thislib.dll.a
++	        $test -f "$xxx" && eval $libscheck
++		$test -f "$xxx" && libstyle=shared
++	    fi
++	    if test ! -f "$xxx"; then
+ 		xxx=$thisdir/lib$thislib$_a
+ 	        $test -f "$xxx" && eval $libscheck
+ 		$test -f "$xxx" && libstyle=static
