@@ -22,6 +22,7 @@ PATCH_URI="
 	pl-cygwin_patchlevelh.patch
 	pl-hints-cygwin.patch
 	pl-cygwin-check-libs.patch
+	pl-cygwin-auto-image-base.patch
 "
 
 MAKEOPTS+=" -j1"

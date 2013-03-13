@@ -1,0 +1,11 @@
+--- origsrc/perl-5.14.4/Makefile.SH	2012-12-19 06:25:23.000000000 -0600
++++ src/perl-5.14.4/Makefile.SH	2013-03-13 13:03:54.186100300 -0500
+@@ -61,7 +61,7 @@ true)
+ 			     -install_name \$(shrpdir)/\$@"
+ 		;;
+ 	cygwin*)
+-		shrpldflags="$shrpldflags -Wl,--out-implib=libperl.dll.a -Wl,--image-base,0x52000000"
++		shrpldflags="$shrpldflags -Wl,--out-implib=libperl.dll.a"
+ 		linklibperl="-L. -lperl"
+ 		;;
+ 	sunos*)
