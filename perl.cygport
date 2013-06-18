@@ -28,6 +28,8 @@ PATCH_URI="
 MAKEOPTS+=" -j1"
 
 src_compile() {
+	local slot=${VERSION%.*}
+
 	cd ${B}
 	cat > Policy.sh <<_EOF
 #!/bin/sh
@@ -44,19 +46,28 @@ vendorhtml1dir="/usr/share/doc/perl/html/html1"
 vendorhtml3dir="/usr/share/doc/perl/html/html3"
 
 archname="${ARCH}-cygwin-threads${ARCH_i686+-64int}"
-privlib="/usr/lib/perl5/${VERSION%.*}"
-sitelib="/usr/lib/perl5/site_perl/${VERSION%.*}"
-vendorlib="/usr/lib/perl5/vendor_perl/${VERSION%.*}"
-archlib="/usr/lib/perl5/${VERSION%.*}/\${archname}"
-sitearch="/usr/lib/perl5/site_perl/${VERSION%.*}/\${archname}"
-vendorarch="/usr/lib/perl5/vendor_perl/${VERSION%.*}/\${archname}"
+privlib="/usr/lib/perl5/${slot}"
+sitelib="/usr/lib/perl5/site_perl/${slot}"
+vendorlib="/usr/lib/perl5/vendor_perl/${slot}"
+archlib="/usr/lib/perl5/${slot}/\${archname}"
+sitearch="/usr/lib/perl5/site_perl/${slot}/\${archname}"
+vendorarch="/usr/lib/perl5/vendor_perl/${slot}/\${archname}"
 
 sitebin="/usr/local/bin"
 sitescript="/usr/local/bin"
 _EOF
 	${S}/Configure -d -e -Dprefix=/usr -Dmksymlinks -Dusethreads \
 		-Darchname=${ARCH}-cygwin-threads${ARCH_i686:+-64int} \
-		-Dlibperl=cygperl${PV[1]}_${PV[2]}.dll \
+		-Dlibperl=cygperl${slot/\./_}.dll \
 		-Dcc=${CC} -Dld=${CXX}
 	cygmake
+}
+
+src_install() {
+	cd ${B}
+	cyginstall
+
+	# prevent xsinit-generated code from referencing boot_Win32CORE
+	sed -i -e "s/^\(static_ext\)=.*/\1=' '/" \
+		${D}/usr/lib/perl5/${VERSION%.*}/${ARCH}-cygwin-threads${ARCH_i686:+-64int}/Config_heavy.pl
 }
